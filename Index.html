@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Мой Магазин</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .item { border: 1px solid #ccc; margin: 10px 0; padding: 10px; }
+    button { padding: 10px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Каталог товаров</h2>
+  <div id="catalog"></div>
+
+  <script>
+    const items = [
+      { name: "Косметическая чистка", price: 2500 },
+      { name: "Массаж лица", price: 3000 },
+      { name: "RF-лифтинг", price: 4500 }
+    ];
+
+    const catalog = document.getElementById('catalog');
+
+    items.forEach(item => {
+      const block = document.createElement('div');
+      block.className = 'item';
+      block.innerHTML = `
+        <b>${item.name}</b><br>
+        Цена: ${item.price} ₽<br>
+        <button onclick="order('${item.name}', ${item.price})">Заказать</button>
+      `;
+      catalog.appendChild(block);
+    });
+
+    function order(name, price) {
+      Telegram.WebApp.sendData(JSON.stringify({ name, price }));
+      Telegram.WebApp.close();
+    }
+
+    Telegram.WebApp.ready();
+  </script>
+</body>
+</html>
