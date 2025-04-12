@@ -1,42 +1,170 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Мой Магазин</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    .item { border: 1px solid #ccc; margin: 10px 0; padding: 10px; }
-    button { padding: 10px; margin-top: 10px; }
+    /* Основной стиль страницы */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    h1 {
+      color: #343a40;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    /* Стиль для карточек товаров */
+    .catalog {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .item {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: left;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease-in-out;
+    }
+    
+    .item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .item img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-bottom: 15px;
+    }
+
+    .item .name {
+      font-size: 1.5rem;
+      color: #495057;
+    }
+    
+    .item .price {
+      font-size: 1.2rem;
+      color: #28a745;
+      margin: 10px 0;
+    }
+    
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .order-confirmation {
+      background-color: #d4edda;
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 8px;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      font-size: 1.2rem;
+      display: none;
+    }
+
+    /* Анимация и плавность */
+    .catalog-item {
+      transition: transform 0.3s ease;
+    }
+
+    .catalog-item:hover {
+      transform: translateY(-5px);
+    }
   </style>
 </head>
 <body>
-  <h2>Каталог товаров</h2>
-  <div id="catalog"></div>
+  <div class="container">
+    <h1>Добро пожаловать в наш магазин!</h1>
+    <div class="catalog" id="catalog"></div>
+
+    <!-- Сообщение после заказа -->
+    <div class="order-confirmation" id="orderConfirmation">
+      <h3>Ваш заказ принят!</h3>
+      <p>Мы свяжемся с вами для подтверждения заказа.</p>
+    </div>
+  </div>
 
   <script>
+    // Массив товаров (с добавлением изображений)
     const items = [
-      { name: "Косметическая чистка", price: 2500 },
-      { name: "Массаж лица", price: 3000 },
-      { name: "RF-лифтинг", price: 4500 }
+      {
+        name: "Косметическая чистка",
+        price: 2500,
+        img: "https://via.placeholder.com/350x200?text=Чистка+лица"
+      },
+      {
+        name: "Массаж лица",
+        price: 3000,
+        img: "https://via.placeholder.com/350x200?text=Массаж+лица"
+      },
+      {
+        name: "RF-лифтинг",
+        price: 4500,
+        img: "https://via.placeholder.com/350x200?text=RF+лифтинг"
+      }
     ];
 
     const catalog = document.getElementById('catalog');
+    const orderConfirmation = document.getElementById('orderConfirmation');
 
+    // Заполнение каталога
     items.forEach(item => {
       const block = document.createElement('div');
-      block.className = 'item';
+      block.className = 'item catalog-item';
       block.innerHTML = `
-        <b>${item.name}</b><br>
-        Цена: ${item.price} ₽<br>
+        <img src="${item.img}" alt="${item.name}">
+        <div class="name">${item.name}</div>
+        <div class="price">${item.price} ₽</div>
         <button onclick="order('${item.name}', ${item.price})">Заказать</button>
       `;
       catalog.appendChild(block);
     });
 
+    // Функция обработки заказа
     function order(name, price) {
       Telegram.WebApp.sendData(JSON.stringify({ name, price }));
-      Telegram.WebApp.close();
+
+      // Показать подтверждение заказа
+      orderConfirmation.style.display = 'block';
+
+      // Закрытие приложения через 2 секунды
+      setTimeout(() => {
+        Telegram.WebApp.close();
+      }, 2000);
     }
 
     Telegram.WebApp.ready();
